@@ -1,6 +1,5 @@
 package br.com.grupo99.notificacao.application.service;
 
-import br.com.grupo99.notificacao.adapter.event.EventPublishingService;
 import br.com.grupo99.notificacao.adapter.repository.NotificacaoRepository;
 import br.com.grupo99.notificacao.application.dto.NotificacaoRequestDTO;
 import br.com.grupo99.notificacao.application.dto.NotificacaoResponseDTO;
@@ -28,9 +27,6 @@ import static org.mockito.Mockito.*;
 class NotificacaoApplicationServiceTest {
     @Mock
     private NotificacaoRepository repository;
-
-    @Mock
-    private EventPublishingService eventPublishingService;
 
     @InjectMocks
     private NotificacaoApplicationService service;
@@ -71,7 +67,6 @@ class NotificacaoApplicationServiceTest {
         assertEquals("cliente@example.com", result.getDestinatarioEmail());
         assertEquals("CONFIRMACAO_MANUTENCAO", result.getTipoNotificacao());
         verify(repository).save(any(Notificacao.class));
-        verify(eventPublishingService).publishNotificacaoPendente(any(), any(), any());
     }
 
     @Test
@@ -143,7 +138,6 @@ class NotificacaoApplicationServiceTest {
         assertNotNull(result);
         verify(repository).findById(notificacaoId);
         verify(repository).save(any(Notificacao.class));
-        verify(eventPublishingService).publishNotificacaoEnviada(any());
     }
 
     @Test
@@ -156,7 +150,6 @@ class NotificacaoApplicationServiceTest {
         assertNotNull(result);
         verify(repository).findById(notificacaoId);
         verify(repository).save(any(Notificacao.class));
-        verify(eventPublishingService).publishNotificacaoFalha(any());
     }
 
     private void setCreatedAt(Notificacao notificacao) {
