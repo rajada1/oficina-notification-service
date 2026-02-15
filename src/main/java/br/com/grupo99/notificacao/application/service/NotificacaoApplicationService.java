@@ -4,7 +4,6 @@ import br.com.grupo99.notificacao.application.dto.NotificacaoRequestDTO;
 import br.com.grupo99.notificacao.application.dto.NotificacaoResponseDTO;
 import br.com.grupo99.notificacao.application.exception.ResourceNotFoundException;
 import br.com.grupo99.notificacao.adapter.repository.NotificacaoRepository;
-import br.com.grupo99.notificacao.adapter.event.EventPublishingService;
 import br.com.grupo99.notificacao.domain.Notificacao;
 import br.com.grupo99.notificacao.domain.StatusNotificacao;
 import br.com.grupo99.notificacao.domain.TipoNotificacao;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class NotificacaoApplicationService {
     private final NotificacaoRepository notificacaoRepository;
-    private final EventPublishingService eventPublishingService;
 
     @Transactional
     public NotificacaoResponseDTO criarNotificacao(NotificacaoRequestDTO requestDTO) {
@@ -37,10 +35,6 @@ public class NotificacaoApplicationService {
                 .build();
 
         Notificacao saved = notificacaoRepository.save(notificacao);
-        eventPublishingService.publishNotificacaoPendente(
-                saved.getId().toString(),
-                saved.getDestinatarioEmail(),
-                saved.getTipoNotificacao().name());
 
         log.info("Notificação criada com sucesso: {}", saved.getId());
         return NotificacaoResponseDTO.fromDomain(saved);
@@ -88,7 +82,6 @@ public class NotificacaoApplicationService {
         notificacao.setDataEnvio(LocalDateTime.now());
         Notificacao updated = notificacaoRepository.save(notificacao);
 
-        eventPublishingService.publishNotificacaoEnviada(updated.getId().toString());
         log.info("Notificação marcada como enviada: {}", id);
         return NotificacaoResponseDTO.fromDomain(updated);
     }
@@ -103,7 +96,6 @@ public class NotificacaoApplicationService {
         notificacao.setTentativas(notificacao.getTentativas() + 1);
         Notificacao updated = notificacaoRepository.save(notificacao);
 
-        eventPublishingService.publishNotificacaoFalha(updated.getId().toString());
         log.info("Notificação marcada com falha: {}", id);
         return NotificacaoResponseDTO.fromDomain(updated);
     }
