@@ -45,7 +45,7 @@ spec:
                 secretKeyRef:
                   name: notification-service-secrets
                   key: DB_PORT
-            - name: SPRING_DATASOURCE_DB
+            - name: DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: notification-service-secrets
